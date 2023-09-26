@@ -1,0 +1,32 @@
+version: '3'
+services:
+  nodejs-app:
+    image: node:18
+    container_name: nodejs-app
+    volumes:
+      - ./app:/app
+    ports:
+      - ${PORT}:3000
+    environment:
+      - HOST=${HOST}
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+    depends_on:
+      - mysql-db
+    command: sh -c "cd /app && npm install && npm start"
+    working_dir: /app
+    networks:
+      - app-network
+
+  mysql-db:
+    image: mysql:latest
+    container_name: mysql-db
+    environment:
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
